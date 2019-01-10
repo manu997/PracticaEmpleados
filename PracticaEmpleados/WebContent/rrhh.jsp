@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+    <%@ page import ="java.util.ArrayList"%>
+    <%@ page import ="clases.Empleado"%>
 	<%
-	String[] mostrarEmpleados = (String[]) request.getAttribute("mostrarEmpleados");
+	ArrayList<Empleado> mostrarEmpleados = (ArrayList<Empleado>) request.getAttribute("mostrarEmpleados");
 	String error_empleado = (String) request.getAttribute("error_empleado");
 	if(error_empleado == null) {
 		error_empleado = "";
@@ -28,6 +30,36 @@
 		color: #28A745;
 	}
 </style>
+<script>
+	function recuperaContrasenia() {
+        // se genera la query_string
+        var datos = 'usuario=' + document.getElementById("usuario").value;
+        alert("Datos a enviar: " + datos);
+
+        var xmlhttp;  // objeto XMLHttpRequest
+        if (window.XMLHttpRequest) {  // para IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {  // para IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+        // si el resultado está listo (readyState==4) y la respuesta es correcta (status==200)
+        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            var respuesta = xmlhttp.responseText;
+            if (respuesta=='') {  // no se encontró el usuario
+            	document.getElementById("usuarioInexistente").style.visibility = 'visible';
+            } else {
+            	document.getElementById("usuarioInexistente").style.visibility = 'hidden';
+            }
+            	document.getElementById("clave").value = respuesta;
+            	document.getElementById("usuario").focus();
+        	}
+	    }
+	    xmlhttp.open("GET","CompruebaUsuario?" + datos ,true);  // crea la conexión con parámetros: método, url, asíncrono?
+	    xmlhttp.setRequestHeader("X-Requested-With", "xmlhttprequest");  // establece la cabecera HTTP necesaria
+	    xmlhttp.send();  // lanza la solicitud
+    }
+  </script>
 </head>
 <body>
 	<div class="jumbotron">
@@ -46,16 +78,28 @@
 		      <th scope="col">Salario</th>
 		      <th scope="col">Comision</th>
 		      <th scope="col">Departamento</th>
+		      <th scope="col"></th>
 		    </tr>
 		</thead>
 		<tbody>
 			<%
-			int i=0;
-			while(i<4) {
-				%>
-				<tr>
-				<td><%=mostrarEmpleados[i] %></td>
-				<tr>
+			for(int i=0; i<mostrarEmpleados.size(); i++) {
+			%><tr>
+				<th scope="row"><%=mostrarEmpleados.get(i).getId().intValue() %></th>
+				<td><%=mostrarEmpleados.get(i).getName() %></td>
+				<td><%=mostrarEmpleados.get(i).getJob() %></td>
+				<td><%=mostrarEmpleados.get(i).getManager().intValue() %></td>
+				<td><%=mostrarEmpleados.get(i).getHiredate() %></td>
+				<td><%=mostrarEmpleados.get(i).getSalary() %></td>
+				<td><%=mostrarEmpleados.get(i).getCommission() %></td>
+				<td><%=mostrarEmpleados.get(i).getDepartment() %></td>
+				<td>
+					<div class="btn-group" role="group">
+					  <button type="button" class="btn btn-info">Modificar</button>
+					  <button type="button" class="btn btn-danger">Eliminar</button>
+					</div>
+				</td>
+			  <tr>
 			<%
 			}
 			%>

@@ -1,0 +1,6 @@
+Required fields:
+	- empno
+	- ename
+	- manager
+	- salary
+	- deptno
